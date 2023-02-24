@@ -7,10 +7,7 @@ window.DrawEventRelay = function (eventBus) {
 
     var whiteboards = []
 
-    // when the event bus fires a notification of a draw event,
-    // send it to all whiteboards attached to this relay
-    // (providing the command came from a different whiteboard)
-    eventBus.on('eventbus:notify', function (commandsReceived) {
+    var runCommands = function (commandsReceived) {
         if (!Array.isArray(commandsReceived)) {
             commandsReceived = [commandsReceived]
         }
@@ -22,7 +19,12 @@ window.DrawEventRelay = function (eventBus) {
                 }
             })
         })
-    })
+    }
+
+    // when the event bus fires a notification of a draw event,
+    // send it to all whiteboards attached to this relay
+    // (providing the command came from a different whiteboard)
+    eventBus.on('eventbus:notify', runCommands)
 
     // attach to a whiteboard; any draw events sent by that
     // whiteboard are passed to the event bus' notify() function
