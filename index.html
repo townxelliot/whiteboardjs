@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://unpkg.com/konva@8.4.2/konva.min.js"></script>
+    <meta charset="utf-8" />
+    <title>Shared Whiteboard</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #f0f0f0;
+      }
+    </style>
+  </head>
+
+  <body>
+    Tool:
+    <select id="tool">
+      <option value="brush">Brush</option>
+      <option value="eraser">Eraser</option>
+    </select>
+
+    <div id="container"></div>
+    <script src="uuid.js"></script>
+    <script src="event.js"></script>
+    <script src="event_bus.js"></script>
+    <script src="event_relay.js"></script>
+    <script src="whiteboard.js"></script>
+    <script>
+      var width = window.innerWidth;
+      var height = window.innerHeight - 25;
+
+      // first we need Konva core things: stage and layer
+      var stage = new Konva.Stage({
+        container: 'container',
+        width: width,
+        height: height,
+      });
+
+      var layer = new Konva.Layer();
+      stage.add(layer);
+
+      var canvasWidth = stage.width() / 4;
+      var canvasHeight = stage.height() / 3;
+
+      var tool = document.getElementById('tool');
+      var whiteboard1 = Whiteboard(
+        {
+          id: 1,
+          lineColour: '#0000ff',
+          canvasWidth: canvasWidth,
+          canvasHeight: canvasHeight,
+        },
+        tool
+      );
+
+      whiteboard1.elt.move({x: 0, y: 0});
+      layer.add(whiteboard1.elt);
+
+      var whiteboard2 = Whiteboard(
+        {
+          id: 2,
+          lineColour: '#ff0000',
+          canvasWidth: canvasWidth,
+          canvasHeight: canvasHeight,
+        }
+      );
+      whiteboard2.elt.move({x: canvasWidth * 2, y: 0})
+      layer.add(whiteboard2.elt);
+
+      var bus = LocalEventBus();
+      var relay = DrawEventRelay(bus);
+      relay.attach(whiteboard1);
+      relay.attach(whiteboard2);
+    </script>
+  </body>
+</html>
